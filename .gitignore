@@ -1,1 +1,37 @@
 backend/data/
+# dependencies (bun install)
+backend/node_modules
+
+# output
+backend/out
+backend/dist
+backend/*.tgz
+
+# code coverage
+backend/coverage
+backend/*.lcov
+
+# logs
+backend/logs
+backend/_.log
+backend/report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+
+# dotenv environment variable files
+backend/.env
+backend/.env.development.local
+backend/.env.test.local
+backend/.env.production.local
+backend/.env.local
+
+# caches
+backend/.eslintcache
+backend/.cache
+backend/*.tsbuildinfo
+
+# IntelliJ based IDEs
+backend/.idea
+
+# Finder (MacOS) folder config
+.DS_Store
+
+/prisma/prisma
