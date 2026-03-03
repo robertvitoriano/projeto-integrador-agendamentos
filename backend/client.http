@@ -1,0 +1,31 @@
+@baseUr = http://localhost:3000
+@authToken = {{authenticate.response.body.accessToken}}
+
+# @name create_acount
+POST {{baseUr}}/accounts
+Content-Type: application/json
+
+{
+  "name":"teste",
+  "email":"email2@email.com",
+  "password":"123"
+}
+
+###
+# @name authenticate
+
+POST {{baseUr}}/sessions
+Content-Type: application/json
+
+{
+  "email":"email2@email.com",
+  "password":"123"
+}
+
+
+###
+# @name buy
+
+POST {{baseUr}}/buy
+Content-Type: application/json
+
