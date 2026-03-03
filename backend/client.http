@@ -21,11 +21,3 @@ Content-Type: application/json
   "email":"email2@email.com",
   "password":"123"
 }
-
-
-###
-# @name buy
-
-POST {{baseUr}}/buy
-Content-Type: application/json
-
