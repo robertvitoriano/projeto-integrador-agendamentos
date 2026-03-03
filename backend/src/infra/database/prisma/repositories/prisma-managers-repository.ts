@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma.service'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Manager } from '@/domain/scheduling/enterprise/entities/manager'
 import { PrismaManagerMapper } from '../mappers/prisma-manager-mapper'
+import { UserRole } from '@prisma/client'
 
 @Injectable()
 export class PrismaManagersRepository implements IManagersRepository {
@@ -18,6 +19,7 @@ export class PrismaManagersRepository implements IManagersRepository {
     const manager = await this.prisma.user.findFirst({
       where: {
         email,
+        role: UserRole.MANAGER
       },
     })
 
