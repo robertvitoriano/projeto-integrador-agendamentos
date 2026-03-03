@@ -4,12 +4,13 @@ import { Prisma, User as PrismaManager } from '@prisma/client'
 
 export class PrismaManagerMapper {
   static toDomain(raw: PrismaManager): Manager {
-    const { email, id, name, password } = raw
+    const { email, id, name, password,document } = raw
     return Manager.create(
       {
         password,
         name,
         email,
+        document
       },
       new UniqueEntityId(id),
     )
@@ -22,12 +23,13 @@ export class PrismaManagerMapper {
   }
 
   static toModel(manager: Manager): Prisma.UserUncheckedCreateInput {
-    const { email, id, name, password } = manager
+    const { email, id, name, password, document } = manager
     return {
       id: id.toString(),
       password,
       name,
       email,
+      document
     }
   }
 }

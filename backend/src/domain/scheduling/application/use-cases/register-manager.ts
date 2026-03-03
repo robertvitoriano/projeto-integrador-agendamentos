@@ -9,6 +9,7 @@ interface RegisterManagerUseCaseRequest {
   name: string
   email: string
   password: string
+  document: string
 }
 type RegisterManagerUseCaseResponse = Result<
   ManagerAlreadyExistsError,
@@ -27,6 +28,7 @@ export class RegisterManagerUseCase {
     email,
     name,
     password,
+    document
   }: RegisterManagerUseCaseRequest): Promise<RegisterManagerUseCaseResponse> {
     const managerWithSameEmail =
       await this.managersRepository.findByEmail(email)
@@ -39,6 +41,7 @@ export class RegisterManagerUseCase {
       email,
       name,
       password: hashedPassword,
+      document
     })
     await this.managersRepository.create(manager)
     return success({ manager })

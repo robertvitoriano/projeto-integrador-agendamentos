@@ -60,7 +60,8 @@
     "migrations:run": "bun x prisma migrate deploy",
     "studio": "bun x prisma studio",
     "db:pull": "bun x prisma db pull",
-    "db:generate": "bun x prisma generate"
+    "db:generate": "bun x prisma generate",
+    "db:reset":"bun x prisma migrate reset"
   },
   "dependencies": {
     "@faker-js/faker": "^10.1.0",
