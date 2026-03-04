@@ -1,29 +1,22 @@
 import { Entity } from '@/core/entities/entity';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-export interface ManagerProps {
-  name: string;
-  email: string;
-  password: string;
-  document: string;
+import { User, UserProps } from './user';
+
+export interface PatientProps extends UserProps {
+  userId: string;
+  createdAt: Date;
 }
-export class Manager extends Entity<ManagerProps> {
-  get name() {
-    return this.props?.name;
+
+export class Patient extends User<PatientProps> {
+  get userId() {
+    return this.props.userId;
   }
 
-  get email() {
-    return this.props?.email;
+  get createdAt() {
+    return this.props.createdAt;
   }
 
-  get document() {
-    return this.props?.document;
-  }
-
-  get password() {
-    return this.props?.password;
-  }
-
-  static create(props: ManagerProps, id?: UniqueEntityId): Manager {
-    return new Manager({ ...props }, id);
+  static create(props: PatientProps, id?: UniqueEntityId): Patient {
+    return new Patient({ ...props }, id);
   }
 }

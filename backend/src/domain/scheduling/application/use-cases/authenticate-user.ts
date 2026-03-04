@@ -3,22 +3,22 @@ import { Injectable } from '@nestjs/common'
 import { HasheComparer } from '../cryptography/hash-comparer'
 import { Encrypter } from '../cryptography/encrypter'
 import { WrongCredentialsError } from './errors/wrong-credentials-erorr'
-import { IManagersRepository } from '../repositories/manager-repository'
+import { IDoctorsRepository } from '../repositories/doctors-repository'
 
-interface AuthenticateManagerUseCaseRequest {
+interface AuthenticateDoctorUseCaseRequest {
   email: string
   password: string
 }
-type AuthenticateManagerUseCaseResponse = Result<
+type AuthenticateDoctorUseCaseResponse = Result<
   WrongCredentialsError,
   {
     accessToken: string
   }
 >
 @Injectable()
-export class AuthenticateManagerUseCase {
+export class AuthenticateUserUseCase {
   constructor(
-    private managersRepository: IManagersRepository,
+    private doctorsRepository: IDoctorsRepository,
     private hashComparer: HasheComparer,
     private encrypter: Encrypter,
   ) {}
@@ -26,21 +26,21 @@ export class AuthenticateManagerUseCase {
   async execute({
     email,
     password,
-  }: AuthenticateManagerUseCaseRequest): Promise<AuthenticateManagerUseCaseResponse> {
-    const manager = await this.managersRepository.findByEmail(email)
-    if (!manager) {
+  }: AuthenticateDoctorUseCaseRequest): Promise<AuthenticateDoctorUseCaseResponse> {
+    const doctor = await this.doctorsRepository.findByEmail(email)
+    if (!doctor) {
       return failure(new WrongCredentialsError())
     }
     const isPasswordValid = await this.hashComparer.compare(
       password,
-      manager.password,
+      doctor.password,
     )
     if (!isPasswordValid) {
       return failure(new WrongCredentialsError())
     }
 
     const accessToken = await this.encrypter.encrypt({
-      sub: manager.id.toString(),
+      sub: doctor.id.toString(),
     })
 
     return success({ accessToken })

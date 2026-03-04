@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { IManagersRepository } from '@/domain/scheduling/application/repositories/manager-repository';
-import { PrismaManagersRepository } from './repositories/prisma-managers-repository';
+import { IDoctorsRepository } from '@/domain/scheduling/application/repositories/doctors-repository';
+import { PrismaDoctorsRepository } from './repositories/prisma-doctors-repository';
 
 @Module({
   providers: [
     PrismaService,
     {
-      provide: IManagersRepository,
-      useClass: PrismaManagersRepository,
+      provide: IDoctorsRepository,
+      useClass: PrismaDoctorsRepository,
     },
   ],
-  exports: [PrismaService, IManagersRepository],
+  exports: [PrismaService, IDoctorsRepository],
 })
 export class DatabaseModule {}

@@ -1,30 +1,33 @@
-import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe'
-import { z } from 'zod'
-import { RegisterManagerUseCase } from '@/domain/scheduling/application/use-cases/register-manager'
+import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common';
+import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
+import { z } from 'zod';
+import { RegisterDoctorUseCase } from '@/domain/scheduling/application/use-cases/register-doctor';
 
 const createAccountBodySchema = z.object({
   name: z.string(),
   email: z.email(),
   password: z.string(),
-})
-type CreateAccountBodySchema = z.infer<typeof createAccountBodySchema>
+  document: z.string(),
+});
+type CreateAccountBodySchema = z.infer<typeof createAccountBodySchema>;
 @Controller('/accounts')
 export class CreateAccountController {
-  constructor(private registerManagerUseCase: RegisterManagerUseCase) {}
+  constructor(private registerDoctorUseCase: RegisterDoctorUseCase) {}
   @Post()
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createAccountBodySchema))
   async handle(@Body() body: CreateAccountBodySchema) {
-    const { email, name, password } = body
-    const result = await this.registerManagerUseCase.execute({
+    const { email, name, password, document } = body;
+    const result = await this.registerDoctorUseCase.execute({
       email,
       name,
       password,
-    })
+      document,
+      crm: '',
+    });
 
     if (result.isFailure()) {
-      throw new Error()
+      throw new Error();
     }
   }
 }

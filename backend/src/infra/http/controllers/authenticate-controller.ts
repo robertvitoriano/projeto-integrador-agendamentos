@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common'
 
 import z from 'zod'
-import { AuthenticateManagerUseCase } from '@/domain/scheduling/application/use-cases/authenticate-manager'
+import { AuthenticateUserUseCase } from '@/domain/scheduling/application/use-cases/authenticate-user'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const authentcateBodySchema = z.object({
   email: z.email(),
@@ -11,7 +11,7 @@ const authentcateBodySchema = z.object({
 type AuthenticateBodySchema = z.infer<typeof authentcateBodySchema>
 @Controller('/sessions')
 export class AuthenticateController {
-  constructor(private authenticateManager: AuthenticateManagerUseCase) {}
+  constructor(private authenticateManager: AuthenticateUserUseCase) {}
 
   @Post()
   async handle(@Body() body: AuthenticateBodySchema) {

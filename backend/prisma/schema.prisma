@@ -8,67 +8,61 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  email      String   @unique
-  password   String
-  name       String
-  document   String   @unique
-  role       UserRole
-
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
-
-  patient      Patient?
-  doctor       Doctor?
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String
+  name         String
+  role         UserRole
+  createdAt    DateTime      @default(now()) @map("created_at")
+  document     String        @unique
+  updatedAt    DateTime      @updatedAt @map("updated_at")
   appointments Appointment[]
+  doctor       Doctor?
+  patient      Patient?
 
   @@map("users")
 }
 
 model Patient {
-  id        String   @id @default(uuid())
-  userId    String   @unique @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at")
-
-  user         User          @relation(fields: [userId], references: [id])
+  id           String        @id @default(uuid())
+  userId       String        @unique @map("user_id")
+  createdAt    DateTime      @default(now()) @map("created_at")
   appointments Appointment[] @relation("PatientAppointments")
+  user         User          @relation(fields: [userId], references: [id])
 
   @@map("patients")
 }
-model Doctor {
-  id        String   @id @default(uuid())
-  userId    String   @unique @map("user_id")
-  crm       String   @unique
-  createdAt DateTime @default(now()) @map("created_at")
 
-  user                 User                 @relation(fields: [userId], references: [id])
+model Doctor {
+  id                   String               @id @default(uuid())
+  userId               String               @unique @map("user_id")
+  crm                  String               @unique
+  createdAt            DateTime             @default(now()) @map("created_at")
   appointments         Appointment[]        @relation("DoctorAppointments")
   doctorAvailabilities DoctorAvailability[] @relation("DoctorAvailabilities")
   doctorSpecialties    DoctorSpecialty[]
+  user                 User                 @relation(fields: [userId], references: [id])
 
   @@map("doctors")
 }
 
 model Specialty {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now()) @map("created_at")
-
+  id                String            @id @default(uuid())
+  name              String            @unique
+  createdAt         DateTime          @default(now()) @map("created_at")
   doctorSpecialties DoctorSpecialty[]
 
   @@map("specialties")
 }
 
 model DoctorSpecialty {
-  doctorId    String   @map("doctor_id")
-  specialtyId String   @map("specialty_id")
-
-  isPrimary   Boolean  @default(false) @map("is_primary")
+  doctorId    String    @map("doctor_id")
+  specialtyId String    @map("specialty_id")
+  isPrimary   Boolean   @default(false) @map("is_primary")
   obtainedAt  DateTime? @map("obtained_at")
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  doctor    Doctor    @relation(fields: [doctorId], references: [id])
-  specialty Specialty @relation(fields: [specialtyId], references: [id])
+  createdAt   DateTime  @default(now()) @map("created_at")
+  doctor      Doctor    @relation(fields: [doctorId], references: [id])
+  specialty   Specialty @relation(fields: [specialtyId], references: [id])
 
   @@id([doctorId, specialtyId])
   @@index([specialtyId])
@@ -76,28 +70,21 @@ model DoctorSpecialty {
 }
 
 model Appointment {
-  id String @id @default(uuid())
-
-  scheduledAt DateTime @map("scheduled_at")
-  durationMin Int      @default(30) @map("duration_min")
-
-  status AppointmentStatus @default(SCHEDULED)
-
-  notes String?
-
-  cancelReason String?   @map("cancel_reason")
-  canceledAt   DateTime? @map("canceled_at")
-  canceledById String?   @map("canceled_by_id")
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  patientId String @map("patient_id")
-  doctorId  String @map("doctor_id")
-
-  patient    Patient @relation("PatientAppointments", fields: [patientId], references: [id])
-  doctor     Doctor  @relation("DoctorAppointments", fields: [doctorId], references: [id])
-  canceledBy User?   @relation(fields: [canceledById], references: [id])
+  id           String            @id @default(uuid())
+  scheduledAt  DateTime          @map("scheduled_at")
+  durationMin  Int               @default(30) @map("duration_min")
+  status       AppointmentStatus @default(SCHEDULED)
+  notes        String?
+  cancelReason String?           @map("cancel_reason")
+  canceledAt   DateTime?         @map("canceled_at")
+  canceledById String?           @map("canceled_by_id")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  patientId    String            @map("patient_id")
+  doctorId     String            @map("doctor_id")
+  canceledBy   User?             @relation(fields: [canceledById], references: [id])
+  doctor       Doctor            @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  patient      Patient           @relation("PatientAppointments", fields: [patientId], references: [id])
 
   @@index([scheduledAt])
   @@index([doctorId, scheduledAt])
@@ -105,14 +92,12 @@ model Appointment {
 }
 
 model DoctorAvailability {
-  id       String @id @default(uuid())
-  doctorId String @map("doctor_id")
-  weekday  Int
-
-  startTime DateTime @db.Time(0) @map("start_time")
-  endTime   DateTime @db.Time(0) @map("end_time")
-
-  doctor Doctor @relation("DoctorAvailabilities", fields: [doctorId], references: [id])
+  id        String   @id @default(uuid())
+  doctorId  String   @map("doctor_id")
+  weekday   Int
+  startTime DateTime @map("start_time") @db.Time(0)
+  endTime   DateTime @map("end_time") @db.Time(0)
+  doctor    Doctor   @relation("DoctorAvailabilities", fields: [doctorId], references: [id])
 
   @@map("doctor_availabilities")
 }

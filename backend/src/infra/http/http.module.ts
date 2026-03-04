@@ -3,8 +3,8 @@ import { CreateAccountController } from './controllers/create-account.controller
 import { AuthenticateController } from './controllers/authenticate-controller'
 import { DatabaseModule } from '../database/prisma/database.module'
 import { CryptographyModule } from '../cryptography/cryptography.module'
-import { AuthenticateManagerUseCase } from '@/domain/scheduling/application/use-cases/authenticate-manager'
-import { RegisterManagerUseCase } from '@/domain/scheduling/application/use-cases/register-manager'
+import { RegisterDoctorUseCase } from '@/domain/scheduling/application/use-cases/register-doctor'
+import { AuthenticateUserUseCase } from '@/domain/scheduling/application/use-cases/authenticate-user'
 @Module({
   imports: [DatabaseModule, CryptographyModule],
   controllers: [
@@ -12,8 +12,8 @@ import { RegisterManagerUseCase } from '@/domain/scheduling/application/use-case
     AuthenticateController,
   ],
   providers: [
-    AuthenticateManagerUseCase,
-    RegisterManagerUseCase,
+    AuthenticateUserUseCase,
+    RegisterDoctorUseCase,
   ],
 })
 export class HttpModule {}
