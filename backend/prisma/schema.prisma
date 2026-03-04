@@ -12,14 +12,88 @@ model User {
   email     String   @unique
   password  String
   name      String
-  role      UserRole @default(PATIENT)
-  createdAt DateTime @default(now()) @map("created_at")
   document  String   @unique
+  role      UserRole
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patient      Patient?
+  doctor       Doctor?
+  appointments Appointment[]
 
   @@map("users")
+}
+
+model Patient {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+
+  user         User          @relation(fields: [userId], references: [id])
+  appointments Appointment[] @relation("PatientAppointments")
+}
+
+model Doctor {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  specialty String
+  crm       String   @unique
+  createdAt DateTime @default(now())
+
+  user         User          @relation(fields: [userId], references: [id])
+  appointments Appointment[] @relation("DoctorAppointments")
+  doctorAvailabilities DoctorAvailability[] @relation("DoctorAvailabilities")
+
+}
+
+model Appointment {
+  id String @id @default(uuid())
+
+  scheduledAt DateTime
+  durationMin Int      @default(30)
+
+  status AppointmentStatus @default(SCHEDULED)
+
+  notes String?
+
+  cancelReason String?
+  canceledAt   DateTime?
+  canceledById String?
+  canceledBy   User?     @relation(fields: [canceledById], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  patientId String
+  doctorId  String
+
+  patient Patient @relation("PatientAppointments", fields: [patientId], references: [id])
+  doctor  Doctor  @relation("DoctorAppointments", fields: [doctorId], references: [id])
+
+  @@index([scheduledAt])
+  @@index([doctorId, scheduledAt])
+}
+
+model DoctorAvailability {
+  id        String   @id @default(uuid())
+  doctorId  String
+  weekday   Int      // 0-6
+
+  startTime DateTime @db.Time(0)
+  endTime   DateTime @db.Time(0)
+
+  doctor Doctor @relation("DoctorAvailabilities", fields: [doctorId], references: [id])
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELED
+  NO_SHOW
 }
 
 enum UserRole {
   MANAGER
   PATIENT
+  DOCTOR
 }
