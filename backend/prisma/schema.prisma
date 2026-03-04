@@ -1,5 +1,8 @@
 generator client {
   provider = "prisma-client-js"
+  //FOR GENERATING ERD DIAGRAM
+  // provider = "prisma-erd-generator"
+  // output   = "./ERD.png" // or ./ERD.png
 }
 
 datasource db {
