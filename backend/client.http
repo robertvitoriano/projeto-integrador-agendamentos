@@ -6,9 +6,10 @@ POST {{baseUr}}/accounts
 Content-Type: application/json
 
 {
-  "name":"teste",
-  "email":"email2@email.com",
-  "password":"123"
+  "name":"testee",
+  "email":"email3@email.com",
+  "document":"document",
+  "password":"1234567"
 }
 
 ###
@@ -18,6 +19,6 @@ POST {{baseUr}}/sessions
 Content-Type: application/json
 
 {
-  "email":"email2@email.com",
-  "password":"123"
+  "email":"email3@email.com",
+  "password":"1234567"
 }
