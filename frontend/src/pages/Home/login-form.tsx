@@ -2,6 +2,7 @@ import { loginUser } from "@/api/login-user";
 import { FormInput } from "@/components/form-input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useAuthStore } from "@/store/authStore";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
@@ -16,10 +17,12 @@ export function LoginForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>();
+  const setToken = useAuthStore((state) => state.setToken);
+
   const { mutate, isPending, error } = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      console.log("Logged in!", data);
+      setToken(data.accessToken);
     },
     onError: (error) => {
       console.error("Login error:", error.message);
@@ -27,8 +30,6 @@ export function LoginForm() {
   });
 
   const onSubmit: SubmitHandler<LoginFormData> = (data) => {
-    console.log(data);
-
     mutate({
       email: data.email,
       password: data.password,

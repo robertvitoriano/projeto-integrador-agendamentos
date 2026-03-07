@@ -5,7 +5,7 @@ export async function loginUser(credentials: { email: string; password: string }
     body: JSON.stringify(credentials),
   })
 
-  if (!response.ok) throw new Error('Login failed') // important for TanStack to catch errors
+  if (!response.ok) throw new Error('Login failed')
 
   return response.json()
 }
