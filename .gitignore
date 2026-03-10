@@ -35,3 +35,5 @@ backend/.idea
 .DS_Store
 
 /prisma/prisma
+.wwebjs_auth
+.wwebjs_auth/*
