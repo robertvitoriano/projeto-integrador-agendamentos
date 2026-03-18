@@ -22,3 +22,9 @@ Content-Type: application/json
   "email":"email3@email.com",
   "password":"1234567"
 }
+
+###
+# @name whats-app
+
+POST {{baseUr}}/whats-app
+Content-Type: application/json

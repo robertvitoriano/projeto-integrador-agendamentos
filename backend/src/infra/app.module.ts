@@ -4,6 +4,7 @@ import { envSchema } from './env'
 import { HttpModule } from './http/http.module'
 import { JWTStrategy } from './auth/jwt.strategy'
 import { AuthModule } from './auth/auth.module'
+import { WhatsAppBot } from './whatsapp/whats-app-bot'
 @Module({
   imports: [
     ConfigModule.forRoot({
