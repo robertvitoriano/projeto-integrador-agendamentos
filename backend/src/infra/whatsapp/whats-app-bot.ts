@@ -1,32 +1,35 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { Client, LocalAuth, MessageMedia } from "whatsapp-web.js";
-import qrcode from "qrcode-terminal";
+import * as QRCode from "qrcode";
 
 @Injectable()
 export class WhatsAppBot implements OnModuleInit {
+  private readonly logger = new Logger(WhatsAppBot.name);
   client: Client | null = null;
 
-  onModuleInit() {
+  async onModuleInit() {
     this.client = new Client({
       authStrategy: new LocalAuth({
         clientId: "bot-session",
       }),
     });
 
-    this.client.on("qr", (qr) => {
-      console.log("QR RECEIVED");
-      qrcode.generate(qr, { small: true });
+    this.client.on("qr", async (qr) => {
+      this.logger.log("QR RECEIVED — scan the code below:");
+      const qrString = await QRCode.toString(qr, { type: "terminal", small: true });
+      console.log(qrString);
     });
 
     this.client.once("ready", () => {
       console.log("Client is ready!");
     });
+    
+    this.start()
 
     this.client.initialize();
   }
 
   public start(): void {
-    console.log('STARTED')
     const nomes = [
       "Arthur",
       "Miguel",
