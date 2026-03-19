@@ -2,11 +2,14 @@ import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { Client, LocalAuth, MessageMedia } from "whatsapp-web.js";
 import * as QRCode from "qrcode";
 
+type Step = "START" | "ASK_DATE" | "ASK_TIME" | "CONFIRM";
+
 @Injectable()
 export class WhatsAppBot implements OnModuleInit {
   private readonly logger = new Logger(WhatsAppBot.name);
   client: Client | null = null;
 
+  private patientSteps = new Map<string, { step: Step; data?: any }>();
   async onModuleInit() {
     this.client = new Client({
       authStrategy: new LocalAuth({
@@ -16,85 +19,65 @@ export class WhatsAppBot implements OnModuleInit {
 
     this.client.on("qr", async (qr) => {
       this.logger.log("QR RECEIVED — scan the code below:");
-      const qrString = await QRCode.toString(qr, { type: "terminal", small: true });
+      const qrString = await QRCode.toString(qr, {
+        type: "terminal",
+        small: true,
+      });
       console.log(qrString);
     });
 
     this.client.once("ready", () => {
       console.log("Client is ready!");
     });
-    
-    this.start()
+
+    this.start();
 
     this.client.initialize();
   }
 
   public start(): void {
-    const nomes = [
-      "Arthur",
-      "Miguel",
-      "Heitor",
-      "Theo",
-      "Davi",
-      "Gabriel",
-      "Samuel",
-      "Pedro",
-      "Lucas",
-    ];
     if (this.client == null) return;
 
     this.client.on("message", async (message) => {
-      console.log({message})
-      if (this.client == null) return;
+      const patientNumber = message.from;
 
-      const text = message.body.toLowerCase().trim();
+      const state = this.patientSteps.get(patientNumber) || { step: "START" };
 
-      if (text != "a" && text != "b" && text != "c") {
-        await this.client.sendMessage(
-          message.from,
-          `O que você deseja receber?\n
-    A - Foto de um gatinho 🐱
-    B - Nome do seu futuro filho 👶
-    C - Encerrar interação`,
-        );
-        return;
-      }
-
-      switch (text) {
-        case "a":
-          const cat = await MessageMedia.fromUrl(
-            "https://cataas.com/cat",
-            { unsafeMime: true },
-          );
-
-          await this.client.sendMessage(
-            message.from,
-            cat,
-            { caption: "Aqui está um gatinho 🐱" },
-          );
+      switch (state.step) {
+        case "START":
+          if (message.body.toLowerCase().includes("agendar")) {
+            await message.reply("Qual data? (ex: 20/03)");
+            this.patientSteps.set(patientNumber, { step: "ASK_DATE" });
+          }
           break;
 
-        case "b":
-          const nome = nomes[Math.floor(Math.random() * nomes.length)];
-
-          await this.client.sendMessage(
-            message.from,
-            `🔮 O nome do seu futuro filho será: *${nome}*`,
-          );
+        case "ASK_DATE":
+          this.patientSteps.set(patientNumber, {
+            step: "ASK_TIME",
+            data: { date: message.body },
+          });
+          await message.reply("Qual horário?");
           break;
 
-        case "c":
-          await this.client.sendMessage(
-            message.from,
-            "Interação finalizada. Digite *menu* se quiser começar novamente.",
-          );
+        case "ASK_TIME":
+          this.patientSteps.set(patientNumber, {
+            step: "CONFIRM",
+            data: { ...state.data, time: message.body },
+          });
+          await message.reply("Confirmar agendamento? (sim/não)");
           break;
 
-        default:
-          await this.client.sendMessage(
-            message.from,
-            "Digite *menu* para ver as opções.",
-          );
+        case "CONFIRM":
+          if (message.body.toLowerCase() === "sim") {
+            console.log("SALVAR NO BANCO:", state.data);
+
+            await message.reply("Agendamento confirmado ✅");
+          } else {
+            await message.reply("Cancelado ❌");
+          }
+
+          this.patientSteps.delete(patientNumber);
+          break;
       }
     });
   }
